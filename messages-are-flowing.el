@@ -56,6 +56,11 @@
   :options (list 'always 'guess 'never nil)
   :group 'message-interface)
 
+(defcustom messages-are-flowing-guess-hard-newlines-regex "\f\\|[ \t]*$"
+  "Regex to detect newlines that should be marked as hard automatically when running MESSAGES-ARE-FLOWING-USE-AND-MARK-HARD-NEWLINES. See also PARAGRAPH-START."
+  :type 'regexp
+  :group 'message-interface)
+
 ;;;###autoload
 (defun messages-are-flowing-use-and-mark-hard-newlines ()
   "Turn on `use-hard-newlines', and make hard newlines visible.
@@ -63,7 +68,8 @@ The main use of this is to send \"flowed\" email messages, where
 line breaks within paragraphs are adjusted by the recipient's
 device, such that messages remain readable on narrow displays."
   (interactive)
-  (use-hard-newlines nil messages-are-flowing-guess-hard-newlines)
+  (let ((paragraph-start messages-are-flowing-guess-hard-newlines-regex))
+    (use-hard-newlines nil messages-are-flowing-guess-hard-newlines))
   (messages-are-flowing--mark-hard-newlines (point-min) (point-max))
   (add-hook 'after-change-functions 'messages-are-flowing--mark-hard-newlines nil t))
 
